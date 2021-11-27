@@ -7,7 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
-    var BASE_URL:String="http://3.108.207.62:3003/api/user/workout/"
+    var BASE_URL: String = "http://3.108.207.62:3003/api/user/workout/"
     val getClient: ApiInterface
         get() {
             val gson = GsonBuilder()

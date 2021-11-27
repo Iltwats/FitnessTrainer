@@ -1,12 +1,10 @@
 package com.atul.fitnesstrainer
 
 import android.app.ProgressDialog
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.atul.fitnesstrainer.databinding.ActivityMainBinding
 import com.atul.fitnesstrainer.modelClasses.Program
 import com.atul.fitnesstrainer.modelClasses.ResponseData
