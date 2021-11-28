@@ -17,12 +17,8 @@ class Filter {
     var v1: Boolean = false
     var v2: Boolean = false
     var v3: Boolean = false
-    fun showDialog(
-        context: Context?,
-        binding: ActivityMainBinding,
-        programList: ArrayList<Program>,
-        listener: OnFiltersAdded
-    ) {
+    fun showDialog(context: Context?, binding: ActivityMainBinding, programList: ArrayList<Program>,
+        listener: OnFiltersAdded) {
         // initialize binding for filters option
         val bind = ItemFiltersOptionBinding.inflate(
             LayoutInflater.from(context),
