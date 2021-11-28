@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.GridView
 import android.widget.Toast
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import com.atul.fitnesstrainer.Filter.OnFiltersAdded
 import com.atul.fitnesstrainer.adapters.GridViewAdapter
 import com.atul.fitnesstrainer.databinding.ActivityMainBinding
 import com.atul.fitnesstrainer.modelClasses.Program
@@ -21,39 +21,87 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     lateinit var progerssProgressDialog: ProgressDialog
     lateinit var programList: ArrayList<Program>
-    lateinit var adapter:GridViewAdapter
+    lateinit var adapter: GridViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        //setToolBar()
+
         programList = ArrayList()
+
+        // initialize progress bar
         progerssProgressDialog = ProgressDialog(this)
         progerssProgressDialog.setTitle("Loading")
         progerssProgressDialog.setCancelable(false)
         progerssProgressDialog.show()
+
+        // fetch data
         getData()
-        binding.ivFilter.setOnClickListener{
-            Filter().showDialog(this,binding,programList)
+
+        // filter the data
+        binding.ivFilter.setOnClickListener {
+            Filter().showDialog(this, binding, programList, object : OnFiltersAdded {
+                override fun filters(
+                    time: Float,
+                    trainer: ArrayList<String>,
+                    difficulty: ArrayList<String>
+                ) {
+                    filterList(time, trainer, difficulty)
+                }
+
+                override fun clearFilters() {
+                    setDataToAdapter()
+                }
+
+            })
         }
 
 
     }
 
-    private fun setToolBar() {
-        setSupportActionBar(binding.toolbarBid)
-        supportActionBar?.setTitle("Navigation")
-        val toggle = ActionBarDrawerToggle(this,binding.drawerLayout,binding.toolbarBid,R.string.open,R.string.close)
-        toggle.syncState()
-        binding.drawerLayout.addDrawerListener(toggle)
+    /**
+     * Apply filters to the list from selection
+     */
+    private fun filterList(time: Float, trainer: ArrayList<String>, difficulty: ArrayList<String>) {
+        var newList: ArrayList<Program> = ArrayList()
+        for (program in programList) {
+            if (time > 2 && ((program.duration / 60L) >= time)) {
+                newList.add(program)
+            }
+            if (trainer.size > 0) {
+                for (train in trainer) {
+                    if (program.trainer_name.contains(train)) {
+                        if (!newList.contains(program)) {
+                            newList.add(program)
+                        }
+                    }
+                }
+            }
+            if (difficulty.size > 0) {
+                for (diff in difficulty) {
+                    if (program.difficulty_level_name.contains(diff)) {
+                        if (!newList.contains(program)) {
+                            newList.add(program)
+                        }
+                    }
+                }
+            }
+        }
+        adapter = GridViewAdapter(this, newList)
+        binding.gridView.numColumns = 2
+        binding.gridView.verticalSpacing = 15
+        binding.gridView.stretchMode = GridView.STRETCH_COLUMN_WIDTH
+        binding.gridView.adapter = adapter
     }
 
+    /**
+     * Set Adapter for Grid View
+     */
     private fun setDataToAdapter() {
-        if(isFetched){
-            adapter = GridViewAdapter(this,programList)
+        if (isFetched) {
+            adapter = GridViewAdapter(this, programList)
             binding.gridView.numColumns = 2
-//            binding.gridView.horizontalSpacing = 15
             binding.gridView.verticalSpacing = 15
             binding.gridView.stretchMode = GridView.STRETCH_COLUMN_WIDTH
             binding.gridView.adapter = adapter
@@ -61,6 +109,9 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * To fetch the data withh category id =14
+     */
     private fun getData() {
         val call: Call<ResponseData> = ApiClient.getClient.getPrograms()
         call.enqueue(object : Callback<ResponseData> {
@@ -82,7 +133,10 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun getAllData(){
+    /**
+     * To fetch all the data without categoryID = 14
+     */
+    private fun getAllData() {
         val getCall: Call<ResponseData> = ApiClient.getClient.getAllData()
         getCall.enqueue(object : Callback<ResponseData> {
             override fun onResponse(call: Call<ResponseData>, response: Response<ResponseData>) {
