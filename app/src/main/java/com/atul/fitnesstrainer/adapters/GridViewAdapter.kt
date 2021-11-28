@@ -8,6 +8,7 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.util.rangeTo
 import com.atul.fitnesstrainer.R
 import com.atul.fitnesstrainer.modelClasses.Program
 
@@ -43,12 +44,18 @@ class GridViewAdapter(var context:Context,var programs:List<Program>): BaseAdapt
         val durationTxt = view.findViewById(R.id.duration) as TextView
 
         //Bind data to TextView and ImageView
-        workOutTxt.text = program.name
-        trainerTxt.text = program.trainer_name
+        workOutTxt.text = program.name.uppercase()
+        trainerTxt.text = "With "+program.trainer_name
         difficultyTxt.text = program.difficulty_level_name
-        durationTxt.text = ((program.duration/60L).toString())+" mins"
-        //img.setImageResource(program.image)
+        durationTxt.text = ((program.duration/60L).toString())+"min"
 
+        // Setting Dummy image
+        val rand = (1..6).random()
+        if(((program.image.substring(0,rand)).toInt())%2 == 0){
+            img.setImageDrawable(context.getDrawable(R.drawable.imag))
+        }else{
+            img.setImageDrawable(context.getDrawable(R.drawable.imag1))
+        }
         //handle itemClicks for the GridView
         view.setOnClickListener {
             Toast.makeText(context, program.description, Toast.LENGTH_SHORT).show()

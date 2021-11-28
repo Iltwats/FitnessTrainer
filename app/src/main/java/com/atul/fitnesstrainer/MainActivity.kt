@@ -33,7 +33,10 @@ class MainActivity : AppCompatActivity() {
         progerssProgressDialog.setTitle("Loading")
         progerssProgressDialog.setCancelable(false)
         progerssProgressDialog.show()
-        getAllData()
+        getData()
+        binding.ivFilter.setOnClickListener{
+            Filter().showDialog(this,binding,programList)
+        }
 
 
     }
